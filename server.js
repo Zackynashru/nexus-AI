@@ -1,3 +1,8 @@
+// ══════════════════════════════════════════════════════════════
+//  NexusAI Backend Proxy Server
+//  Node.js + Express — aman menyimpan API key di server
+// ══════════════════════════════════════════════════════════════
+
 const express    = require('express');
 const cors       = require('cors');
 const helmet     = require('helmet');
@@ -8,6 +13,7 @@ require('dotenv').config();
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
+// ─── Security & Middleware ───────────────────────────────────
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({
   origin: process.env.ALLOWED_ORIGIN || '*',  
@@ -15,6 +21,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10kb' }));
 
+// Rate limiter — max 30 request per menit per IP
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 30,
@@ -24,25 +31,28 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// ─── Serve Frontend ──────────────────────────────────────────
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ─── Health Check ────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
     providers: {
       claude: !!process.env.ANTHROPIC_API_KEY,
-      openai: !!process.env.OPENAI_API_KEY,
+      openai: !!process.env.OPENAI_API_KEY, // Ini dipakai buat Groq juga
     },
   });
 });
 
+// ─── Chat Endpoint ───────────────────────────────────────────
 app.post('/api/chat', async (req, res) => {
   const {
-    provider    = 'openai',
-    model       = 'llama-3.3-70b-versatile',
-    messages    = [],
-    system      = '',
+    provider   = 'openai', // Defaultnya ubah ke openai biar langsung masuk ke Groq
+    model      = 'llama3-70b-8192',
+    messages   = [],
+    system     = '',
     temperature = 0.7,
     max_tokens  = 1024,
     stream      = true,
@@ -59,6 +69,7 @@ app.post('/api/chat', async (req, res) => {
     if (provider === 'claude') {
       await proxyClaude({ model, messages, system, temperature, max_tokens, stream }, res);
     } else if (provider === 'openai') {
+      // Fungsi OpenAI kita bajak buat Groq
       await proxyOpenAI({ model, messages, system, temperature, max_tokens, stream }, res);
     } else {
       res.status(400).json({ error: 'Provider tidak valid.' });
@@ -71,6 +82,7 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// ─── Claude Proxy ────────────────────────────────────────────
 async function proxyClaude({ model, messages, system, temperature, max_tokens, stream }, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY tidak dikonfigurasi di server.');
@@ -112,8 +124,9 @@ async function proxyClaude({ model, messages, system, temperature, max_tokens, s
   }
 }
 
+// ─── OpenAI / Groq Proxy ────────────────────────────────────────────
 async function proxyOpenAI({ model, messages, system, temperature, max_tokens, stream }, res) {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY; // Masukkan API Key Groq-mu di variabel ini
   if (!apiKey) throw new Error('API_KEY tidak dikonfigurasi di server.');
 
   const allMessages = [
@@ -121,6 +134,7 @@ async function proxyOpenAI({ model, messages, system, temperature, max_tokens, s
     ...messages,
   ];
 
+  // URL OpenAI sudah diganti jadi URL Groq
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -154,17 +168,19 @@ async function proxyOpenAI({ model, messages, system, temperature, max_tokens, s
   }
 }
 
+// ─── Fallback ────────────────────────────────────────────────
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// ─── Start Server ────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`
   ╔══════════════════════════════════╗
   ║   NexusAI Backend — PORT ${PORT}    ║
   ╠══════════════════════════════════╣
-  ║  Claude : ${process.env.ANTHROPIC_API_KEY ? '✅ Active' : '❌ Inactive'}           ║
-  ║  Groq   : ${process.env.OPENAI_API_KEY ? '✅ Active' : '❌ Inactive'}           ║
+  ║  Claude : ${process.env.ANTHROPIC_API_KEY ? '✅ Siap' : '❌ Belum diset'}                ║
+  ║  Groq   : ${process.env.OPENAI_API_KEY ? '✅ Siap' : '❌ Belum diset'}                ║
   ╚══════════════════════════════════╝
   `);
 });
