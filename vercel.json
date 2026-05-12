@@ -12,8 +12,12 @@
       "dest": "server.js"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/public/$1"
+      "status": 404,
+      "dest": "/index.html"
     }
   ]
 }
