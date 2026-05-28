@@ -19,7 +19,7 @@ app.use(cors({
   origin: process.env.ALLOWED_ORIGIN || '*',  
   methods: ['GET', 'POST'],
 }));
-app.use(express.json({ limit: '10kb' }));
+app.use(express.json({ limit: '50kb' }));
 
 // Rate limiter — max 30 request per menit per IP
 const limiter = rateLimit({
