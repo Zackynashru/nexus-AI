@@ -70,7 +70,25 @@ app.post('/api/chat', async (req, res) => {
       await proxyClaude({ model, messages, system, temperature, max_tokens, stream }, res);
     } else if (provider === 'openai') {
       // Fungsi OpenAI kita bajak buat Groq
-      await proxyOpenAI({ model, messages, system, temperature, max_tokens, stream }, res);
+      const resepKuPrompt = `Kamu adalah 'ResepKu', asisten koki virtual profesional kelas dunia. Tugas HANYA memberikan resep masakan, tips dapur, dan panduan kuliner. 
+
+ATURAN WAJIB SAAT MEMBERIKAN RESEP:
+1. Kamu WAJIB menyertakan TAKARAN YANG SPESIFIK DAN AKURAT untuk setiap bahan (contoh: 3 siung bawang putih, 250 gram tepung, 1 sdt garam, 200 ml air). DILARANG KERAS hanya menyebutkan nama bahan tanpa takaran.
+2. Gunakan format Markdown berikut secara konsisten:
+   - **Judul Masakan**
+   - **Deskripsi Singkat**
+   - **Bahan-bahan:** (List dengan takaran pasti)
+   - **Bumbu Halus/Cemplung:** (Jika ada, wajib dengan takaran)
+   - **Langkah-langkah:** (List bernomor yang jelas dan mudah diikuti)
+3. Jika pengguna bertanya di luar topik memasak, tolak dengan sopan dan arahkan kembali ke dapur.
+
+ATURAN MUTLAK (GUARDRAIL):
+Kamu adalah koki, BUKAN asisten umum. Evaluasi pertanyaan pengguna sebelum menjawab. Jika pengguna bertanya tentang topik di luar makanan, minuman, resep, bumbu, alat dapur, atau teknik memasak (misalnya: otomotif, coding, politik, dll), KAMU DILARANG KERAS MENJAWABNYA.
+(Pengecualian: Kamu boleh membalas dengan ramah jika pengguna hanya mengucapkan salam/sapaan seperti 'halo', atau ucapan terima kasih/pujian).
+
+Jika melanggar topik, kamu WAJIB menjawab HANYA dengan kalimat ini tanpa tambahan apa pun: 
+'Maaf ya, aku ini asisten koki! 👨‍🍳 Aku cuma bisa bantu kamu ngeracik bumbu dan bikin resep masakan enak. Ada bahan makanan apa nih di kulkasmu yang bisa kita masak?'`;
+      await proxyOpenAI({ model, messages, system: resepKuPrompt, temperature, max_tokens, stream }, res);
     } else {
       res.status(400).json({ error: 'Provider tidak valid.' });
     }
@@ -129,9 +147,24 @@ async function proxyOpenAI({ model, messages, system, temperature, max_tokens, s
   const apiKey = process.env.OPENAI_API_KEY; // Masukkan API Key Groq-mu di variabel ini
   if (!apiKey) throw new Error('API_KEY tidak dikonfigurasi di server.');
 
+  // Proses messages untuk memastikan guardrail berfungsi maksimal
+  const processedMessages = messages.map(m => ({ ...m })); // clone array of objects
+
+  // Tambahkan penegasan di pesan user terakhir (opsional tapi ampuh untuk Llama/Groq)
+  for (let i = processedMessages.length - 1; i >= 0; i--) {
+    if (processedMessages[i].role === 'user') {
+      if (typeof processedMessages[i].content === 'string') {
+        processedMessages[i].content += "\n\n(Ingat: Jika pertanyaan ini di luar topik kuliner/dapur - KECUALI ucapan terima kasih atau salam - tolak dengan kalimat template di system prompt!)";
+      } else if (Array.isArray(processedMessages[i].content)) {
+        processedMessages[i].content.push({ type: "text", text: "\n\n(Ingat: Jika pertanyaan ini di luar topik kuliner/dapur - KECUALI ucapan terima kasih atau salam - tolak dengan kalimat template di system prompt!)" });
+      }
+      break;
+    }
+  }
+
   const allMessages = [
     ...(system ? [{ role: 'system', content: system }] : []),
-    ...messages,
+    ...processedMessages,
   ];
 
   // URL OpenAI sudah diganti jadi URL Groq

@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexusAI — Chatbot</title>
+<title>ResepKu</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -16,9 +17,9 @@
   --surface3:#22223a;
   --border:rgba(120,120,200,.1);
   --border2:rgba(120,120,200,.18);
-  --accent:#6c63ff;
-  --accent2:#9d97ff;
-  --accent3:#c4c1ff;
+  --accent:#ea580c;
+  --accent2:#f97316;
+  --accent3:#fdba74;
   --green:#22c55e;
   --red:#ef4444;
   --amber:#f59e0b;
@@ -26,6 +27,7 @@
   --text2:#9898b8;
   --text3:#55556a;
   --user-bubble:#1a1635;
+  --user-text:#d4d0ff;
   --ai-bubble:#13131e;
   --sans:'Outfit',sans-serif;
   --mono:'JetBrains Mono',monospace;
@@ -44,6 +46,7 @@
   --text2:#555570;
   --text3:#aaaacc;
   --user-bubble:#ede9ff;
+  --user-text:#1a1a2e;
   --ai-bubble:#ffffff;
 }
 
@@ -68,7 +71,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .brand{display:flex;align-items:center;gap:10px}
 .brand-icon{
   width:32px;height:32px;border-radius:9px;
-  background:linear-gradient(135deg,#6c63ff,#c084fc);
+  background:linear-gradient(135deg,#c2410c,#f59e0b);
   display:flex;align-items:center;justify-content:center;
   font-size:16px;
 }
@@ -173,7 +176,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 }
 .welcome-logo{
   font-size:52px;line-height:1;
-  background:linear-gradient(135deg,#6c63ff,#c084fc,#67e8f9);
+  background:linear-gradient(135deg,#9a3412,#ea580c,#fcd34d);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .welcome h2{font-size:24px;font-weight:700;letter-spacing:-.03em}
@@ -203,7 +206,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   display:flex;align-items:center;justify-content:center;
   font-size:14px;font-weight:700;align-self:flex-start;margin-top:2px;
 }
-.avatar.ai{background:linear-gradient(135deg,#312e81,var(--accent))}
+.avatar.ai{background:linear-gradient(135deg,#78350f,var(--accent))}
 .avatar.user{background:linear-gradient(135deg,#1e3a5f,#2563eb);font-size:12px}
 
 .bubble-wrap{max-width:78%;display:flex;flex-direction:column;gap:4px}
@@ -220,8 +223,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   border-top-left-radius:4px;
 }
 .msg-row.user .bubble{
-  background:var(--user-bubble);border:1px solid rgba(108,99,255,.2);
-  border-top-right-radius:4px;color:#d4d0ff;
+  background:var(--user-bubble);border:1px solid rgba(234,88,12,.2);
+  border-top-right-radius:4px;color:var(--user-text);
 }
 
 /* streaming cursor */
@@ -255,7 +258,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   color:#a5f3fc;overflow-x:auto;
 }
 .bubble code:not(pre code){
-  background:rgba(108,99,255,.12);border:1px solid rgba(108,99,255,.2);
+  background:rgba(234,88,12,.12);border:1px solid rgba(234,88,12,.2);
   border-radius:4px;padding:1px 5px;font-family:var(--mono);font-size:12.5px;color:var(--accent3);
 }
 .bubble strong{color:var(--text);font-weight:600}
@@ -270,7 +273,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 .bubble a:hover{text-decoration:underline}
 .bubble blockquote{
   border-left:3px solid var(--accent);padding:6px 12px;margin:8px 0;
-  background:rgba(108,99,255,.05);border-radius:0 6px 6px 0;color:var(--text2);
+  background:rgba(234,88,12,.05);border-radius:0 6px 6px 0;color:var(--text2);
 }
 
 /* msg actions */
@@ -284,7 +287,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   color:var(--text3);font-family:var(--mono);font-size:10px;
   cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:4px;
 }
-.msg-action-btn:hover{color:var(--accent2);border-color:var(--accent);background:rgba(108,99,255,.08)}
+.msg-action-btn:hover{color:var(--accent2);border-color:var(--accent);background:rgba(234,88,12,.08)}
 .msg-action-btn svg{width:11px;height:11px}
 .msg-row.user .msg-actions{flex-direction:row-reverse}
 
@@ -320,8 +323,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   cursor:pointer;display:flex;align-items:center;gap:5px;
   transition:all .15s;white-space:nowrap;
 }
-.toolbar-btn:hover{border-color:var(--accent);color:var(--accent2);background:rgba(108,99,255,.08)}
-.toolbar-btn.active{border-color:var(--accent);color:var(--accent2);background:rgba(108,99,255,.12)}
+.toolbar-btn:hover{border-color:var(--accent);color:var(--accent2);background:rgba(234,88,12,.08)}
+.toolbar-btn.active{border-color:var(--accent);color:var(--accent2);background:rgba(234,88,12,.12)}
 .toolbar-btn svg{width:12px;height:12px}
 
 .input-box{
@@ -330,7 +333,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
   border-radius:14px;padding:10px 12px;
   transition:border .2s;
 }
-.input-box:focus-within{border-color:rgba(108,99,255,.45)}
+.input-box:focus-within{border-color:rgba(234,88,12,.45)}
 
 #chat-input{
   flex:1;background:transparent;border:none;outline:none;
@@ -436,7 +439,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--s
 }
 .search-bar input:focus{border-color:var(--accent)}
 .search-count{font-family:var(--mono);font-size:11px;color:var(--text3)}
-mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;padding:0 1px}
+mark{background:rgba(234,88,12,.3);color:var(--accent3);border-radius:2px;padding:0 1px}
 
 /* ── VOICE RECORDING ── */
 .voice-btn.recording{
@@ -487,6 +490,86 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
 *::-webkit-scrollbar{width:4px;height:4px}
 *::-webkit-scrollbar-track{background:transparent}
 *::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ── GHIBLI THEME (EASTER EGG) ── */
+body.ghibli-theme, body.ghibli-theme .sidebar, body.ghibli-theme .bubble, body.ghibli-theme .input-area, body.ghibli-theme .topbar, body.ghibli-theme .feat-card {
+  transition: all 0.3s ease;
+}
+body.ghibli-theme {
+  --bg: #f4ebd8;
+  --bg2: #eae0cd;
+  --surface: #fdfaf3;
+  --surface2: #f2eade;
+  --surface3: #e6dfd1;
+  --border: rgba(92, 107, 86, 0.15);
+  --border2: rgba(92, 107, 86, 0.25);
+  --text: #414a3e;
+  --text2: #65715e;
+  --text3: #8a9681;
+  --user-bubble: #d5e0cd;
+  --user-text: #2f382a;
+  --ai-bubble: #fdfaf3;
+  --accent: #6b8455;
+  --accent2: #8ba873;
+  --accent3: #a4c28d;
+}
+body.ghibli-theme .sidebar {
+  background: #465942;
+  border-right-color: #3b4d38;
+}
+body.ghibli-theme .brand-name { color: #fdfaf3; }
+body.ghibli-theme .brand-sub { color: #aebfb1; }
+body.ghibli-theme .sessions-label { color: #aebfb1; }
+body.ghibli-theme .session-item { color: #fdfaf3; }
+body.ghibli-theme .session-title { color: #fdfaf3; }
+body.ghibli-theme .session-meta { color: #aebfb1; }
+body.ghibli-theme .session-item:hover { background: rgba(255,255,255,0.1); }
+body.ghibli-theme .session-item.active { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3); }
+body.ghibli-theme .sidebar-btn { color: #e6edd8; border-color: rgba(255,255,255,0.15); }
+body.ghibli-theme .sidebar-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+body.ghibli-theme .brand-icon { background: linear-gradient(135deg, #6b8455, #8ba873); }
+body.ghibli-theme .avatar.ai { background: linear-gradient(135deg, #cfb784, #ebdcaf); color: #5c4d29; }
+body.ghibli-theme .avatar.user { background: linear-gradient(135deg, #6b8455, #465942); color: #fff; }
+body.ghibli-theme .msg-row.ai .bubble { background: #fefbec; border: 1px solid rgba(207, 183, 132, 0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.03); color: #3b3527; }
+body.ghibli-theme .msg-row.user .bubble { background: #d3decc; border: 1px solid rgba(107, 132, 85, 0.3); box-shadow: 0 4px 12px rgba(0,0,0,0.03); color: #2c3826; }
+body.ghibli-theme .welcome h2 { color: #3b4d38; }
+body.ghibli-theme .welcome-logo { background: linear-gradient(135deg, #6b8455, #cfb784); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+body.ghibli-theme .feat-card { box-shadow: 0 4px 12px rgba(92, 107, 86, 0.05); }
+body.ghibli-theme .search-bar input { background: var(--surface); color: var(--text); }
+body.ghibli-theme .api-banner { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+body.ghibli-theme .modal { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+body.ghibli-theme .bubble pre { background: #3b453a; color: #fdfaf3; border-color: #4a5c49; }
+body.ghibli-theme .bubble pre code { color: #e1ebde; }
+body.ghibli-theme .code-header { background: rgba(255,255,255,0.05); border-bottom-color: #4a5c49; }
+
+/* ── KALKULATOR PORSI ── */
+.portion-calc { display: inline-flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 4px 8px; margin: 10px 0 6px; }
+.portion-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 4px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: var(--mono); font-size: 14px; transition: all 0.2s; }
+.portion-btn:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+.portion-text { font-family: var(--mono); font-size: 12px; color: var(--text2); font-weight: 600; min-width: 50px; text-align: center; }
+
+/* ── FITUR BARU: TIMERS & TOGGLES & VISION & UNITS ── */
+.toggle-pill { background: var(--surface); border: 1px solid var(--border); color: var(--text2); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.toggle-pill:hover { background: var(--surface2); }
+.toggle-pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.timer-btn { background: #fff3cd; border: 1px solid #ffe69c; color: #664d03; padding: 2px 8px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; margin: 0 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: transform 0.1s; }
+.timer-btn:active { transform: scale(0.95); }
+
+.shop-check { margin-right: 8px; cursor: pointer; accent-color: var(--accent); transform: scale(1.1); }
+.shop-item { display: flex; align-items: center; margin-bottom: 4px; transition: opacity 0.2s; }
+.shop-item.checked { text-decoration: line-through; opacity: 0.6; }
+
+.unit-converter { border-bottom: 1px dashed var(--accent); color: var(--accent); font-weight: 600; cursor: pointer; padding: 0 2px; }
+.unit-converter:hover { background: var(--surface2); border-radius: 2px; }
+
+#floating-timers { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; }
+.active-timer-card { background: var(--surface); border: 1px solid var(--accent); border-left: 4px solid var(--accent); border-radius: 8px; padding: 12px 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: 200px; animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.active-timer-card.done { border-left-color: #ef4444; animation: pulseRed 1s infinite; }
+.timer-time { font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--text); }
+
+@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 </style>
 </head>
 <body>
@@ -496,17 +579,17 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
 <aside class="sidebar" id="sidebar">
   <div style="padding:12px 12px 4px">
     <div class="brand" style="margin-bottom:12px">
-      <div class="brand-icon">✦</div>
+      <div class="brand-icon">👨‍🍳</div>
       <div>
-        <div class="brand-name">NexusAI</div>
-        <div class="brand-sub">v2.0 — Groq Powered</div>
+        <div class="brand-name">ResepKu</div>
+        <div class="brand-sub">Asisten Dapur & Resep Andalanmu</div>
       </div>
     </div>
     <button class="new-chat-btn" onclick="newChat()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      Chat Baru
+      Racik Menu Baru
     </button>
-    <div class="sessions-label">RIWAYAT CHAT</div>
+    <div class="sessions-label">BUKU RESEP TERSIMPAN</div>
   </div>
   <div class="sessions" id="sessions"></div>
   <div class="sidebar-footer">
@@ -518,9 +601,12 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
       <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
       Ganti Tema
     </button>
-    <button class="sidebar-btn" onclick="exportChat()">
+    <button class="sidebar-btn" onclick="toggleGhibli()">
+      Mode Dapur Animasi 🍃
+    </button>
+    <button class="sidebar-btn" onclick="downloadRecipePDF()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-      Export Chat (JSON)
+      Download Resep (PDF)
     </button>
   </div>
 </aside>
@@ -533,7 +619,7 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
     </button>
     <span class="topbar-title" id="chat-title">Chat Baru</span>
     <div class="topbar-actions">
-      <span class="model-badge" id="model-badge">llama3-70b-8192</span>
+      <span class="model-badge" id="model-badge" style="display:none">llama3-70b-8192</span>
       <button class="icon-btn" title="Cari pesan" onclick="toggleSearch()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       </button>
@@ -565,29 +651,33 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
 
   <div class="input-area">
     <div class="input-toolbar">
+      <div class="quick-toggles" style="display:flex; gap:6px; flex-wrap:wrap">
+        <button class="toggle-pill" onclick="this.classList.toggle('active')" data-tag="Mode Hemat/Akhir Bulan">💸 Hemat</button>
+        <button class="toggle-pill" onclick="this.classList.toggle('active')" data-tag="Mode Kilat (< 15 Menit)">⏱️ Kilat</button>
+        <button class="toggle-pill" onclick="this.classList.toggle('active')" data-tag="Tinggi Protein & Sehat">💪 Protein</button>
+      </div>
+      <div style="flex:1"></div>
       <button class="toolbar-btn voice-btn" id="voice-btn" onclick="toggleVoice()" title="Input suara">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-        VOICE
+        Dikte Resep
       </button>
       <button class="toolbar-btn" onclick="openSystemPrompt()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        SYSTEM PROMPT
+        <span style="font-size:14px">🍃</span> Diet
       </button>
-      <button class="toolbar-btn" onclick="regenerateLast()" id="regen-btn" style="display:none">
+      <button class="toolbar-btn" onclick="regenerateLast()" id="regen-btn" style="display:none" title="Regenerate">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        REGENERATE
       </button>
     </div>
 
     <div class="input-box">
       <textarea id="chat-input" rows="1"
-        placeholder="Ketik pesan atau tekan tombol VOICE..."
+        placeholder="Ketik bahan di kulkasmu (misal: telur, bawang, ayam) atau nama hidangan..."
         onkeydown="handleKey(event)"
         oninput="onInputChange(this)"></textarea>
       <div class="input-right">
         <span class="char-count" id="char-count">0</span>
         <button class="send-btn" id="send-btn" onclick="sendMessage()" disabled>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+          <span style="font-size:18px">🍲</span>
         </button>
       </div>
     </div>
@@ -602,6 +692,8 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
   </div>
 </div>
 </div>
+
+<div id="floating-timers"></div>
 
 <div class="modal-overlay" id="settings-modal">
   <div class="modal">
@@ -625,7 +717,7 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
 
     <div class="form-group">
       <label class="form-label">MODEL</label>
-      <<select class="form-select" id="model-select">
+      <select class="form-select" id="model-select">
         <optgroup label="Groq (Gratis & Cepat)">
           <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Terbaik)</option>
           <option value="llama-3.1-8b-instant">Llama 3.1 8B (Cepat)</option>
@@ -679,13 +771,13 @@ mark{background:rgba(108,99,255,.3);color:var(--accent3);border-radius:2px;paddi
     <div class="form-group">
       <label class="form-label">INSTRUKSI SISTEM (karakter AI)</label>
       <textarea class="form-textarea" id="system-prompt-input" rows="8"
-        placeholder="Contoh: Kamu adalah asisten coding expert yang selalu menjawab dengan kode lengkap dan penjelasan terstruktur..."></textarea>
+        placeholder="Contoh: Kamu adalah koki profesional yang ramah dan selalu memberikan resep praktis beserta tips dapur..."></textarea>
     </div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
-      <button class="toolbar-btn" onclick="setPreset('coder')">💻 Coder Expert</button>
-      <button class="toolbar-btn" onclick="setPreset('tutor')">📚 Tutor Bahasa</button>
-      <button class="toolbar-btn" onclick="setPreset('writer')">✍️ Penulis Kreatif</button>
-      <button class="toolbar-btn" onclick="setPreset('analyst')">📊 Analis Data</button>
+      <button class="toolbar-btn" onclick="setPreset('chef')">🧑‍🍳 Master Chef</button>
+      <button class="toolbar-btn" onclick="setPreset('baker')">🥐 Pastry Chef</button>
+      <button class="toolbar-btn" onclick="setPreset('nutritionist')">🥗 Ahli Gizi</button>
+      <button class="toolbar-btn" onclick="setPreset('mom')">🥘 Resep Rumahan</button>
       <button class="toolbar-btn" onclick="setPreset('default')">🤖 Default</button>
     </div>
     <div class="modal-actions">
@@ -707,7 +799,7 @@ let cfg = {
   maxTokens:1024,
   mode:     'proxy',   // Otomatis Proxy agar aman
   proxyUrl: 'http://localhost:3000',
-  systemPrompt: `Kamu adalah asisten AI yang cerdas, ramah, dan helpful.\nJawab dalam bahasa yang sama dengan pengguna (Indonesia atau Inggris).\nGunakan format markdown untuk code, list, atau teks yang perlu ditekankan.\nBerikan jawaban yang akurat, terstruktur, dan mudah dipahami.`
+  systemPrompt: `Kamu adalah asisten AI yang cerdas, ramah, dan helpful.\nJawab dalam bahasa yang sama dengan pengguna.\nGunakan markdown untuk format resep, list bahan, dan instruksi masak.`
 };
 
 let sessions    = [];
@@ -734,6 +826,10 @@ function loadFromStorage() {
   try {
     const saved = JSON.parse(localStorage.getItem('nexusai_cfg') || '{}');
     Object.assign(cfg, saved);
+    if (cfg.model && cfg.model.includes('vision')) {
+      cfg.model = 'llama-3.3-70b-versatile'; // fallback from deprecated vision model
+      saveToStorage();
+    }
     const savedSessions = JSON.parse(localStorage.getItem('nexusai_sessions') || '[]');
     sessions = savedSessions;
   } catch(e) {}
@@ -750,7 +846,7 @@ function saveToStorage() {
 // ════════════════════════════════════════════════
 function newChat() {
   const id = 'chat_' + Date.now();
-  sessions.unshift({ id, title: 'Chat Baru', history: [], createdAt: Date.now() });
+  sessions.unshift({ id, title: 'Racik Menu Baru', history: [], createdAt: Date.now() });
   saveToStorage();
   switchSession(id);
   renderSessions();
@@ -805,15 +901,22 @@ function getCurrentSession() { return sessions.find(s => s.id === currentId); }
 // ════════════════════════════════════════════════
 async function sendMessage() {
   const input = document.getElementById('chat-input');
-  const text  = input.value.trim();
+  let text  = input.value.trim();
   if (!text || isStreaming) return;
 
   const sess = getCurrentSession();
   if (!sess) return;
 
+  // Append Quick Toggles
+  const toggles = Array.from(document.querySelectorAll('.toggle-pill.active')).map(el => el.getAttribute('data-tag'));
+  if (toggles.length > 0) {
+    text += `\n\n[MODE AKTIF: ${toggles.join(', ')}]`;
+  }
+
   // Add user message
   sess.history.push({ role: 'user', content: text });
-  if (sess.title === 'Chat Baru' && sess.history.length === 1) {
+  
+  if (sess.title === 'Racik Menu Baru' && sess.history.length === 1) {
     sess.title = text.slice(0, 40) + (text.length > 40 ? '…' : '');
     document.getElementById('chat-title').textContent = sess.title;
     renderSessions();
@@ -897,9 +1000,33 @@ async function streamClaude(history, typingEl) {
 
 // ── Stream OpenAI / Groq ──
 async function streamOpenAI(history, typingEl) {
+  // Tambahkan guardrail dinamis ke pesan terakhir user jika ada
+  const processedHistory = history.map(m => ({ ...m }));
+  for (let i = processedHistory.length - 1; i >= 0; i--) {
+    if (processedHistory[i].role === 'user') {
+      if (typeof processedHistory[i].content === 'string') {
+        processedHistory[i].content += "\n\n(Ingat: Jika pertanyaan ini di luar topik kuliner/dapur - KECUALI ucapan terima kasih atau salam - tolak dengan kalimat template di system prompt!)";
+      } else if (Array.isArray(processedHistory[i].content)) {
+        processedHistory[i].content.push({ type: "text", text: "\n\n(Ingat: Jika pertanyaan ini di luar topik kuliner/dapur - KECUALI ucapan terima kasih atau salam - tolak dengan kalimat template di system prompt!)" });
+      }
+      break;
+    }
+  }
+
+  // Paksa guardrail masuk ke system prompt jika belum ada
+  let sysPrompt = cfg.systemPrompt;
+  if (!sysPrompt.includes("ATURAN MUTLAK (GUARDRAIL)")) {
+    sysPrompt += `\n\nATURAN MUTLAK (GUARDRAIL):
+Kamu adalah koki, BUKAN asisten umum. Evaluasi pertanyaan pengguna sebelum menjawab. Jika pengguna bertanya tentang topik di luar makanan, minuman, resep, bumbu, alat dapur, atau teknik memasak (misalnya: otomotif, coding, politik, dll), KAMU DILARANG KERAS MENJAWABNYA.
+(Pengecualian: Kamu boleh membalas dengan ramah jika pengguna hanya mengucapkan salam/sapaan seperti 'halo', atau ucapan terima kasih/pujian).
+
+Jika melanggar topik, kamu WAJIB menjawab HANYA dengan kalimat ini tanpa tambahan apa pun: 
+'Maaf ya, aku ini asisten koki! 👨‍🍳 Aku cuma bisa bantu kamu ngeracik bumbu dan bikin resep masakan enak. Ada bahan makanan apa nih di kulkasmu yang bisa kita masak?'`;
+  }
+
   const messages = [
-    { role: 'system', content: cfg.systemPrompt },
-    ...history
+    { role: 'system', content: sysPrompt },
+    ...processedHistory
   ];
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -1038,6 +1165,7 @@ function createMsgRow(role, content, index, history) {
   bubble.className = 'bubble';
   bubble.innerHTML = isAI ? markdownToHTML(content) : '<p>' + esc(content).replace(/\n/g,'<br>') + '</p>';
   highlightCodeBlocks(bubble);
+  if (isAI) injectPortionCalculator(bubble);
 
   const time = document.createElement('div');
   time.className = 'msg-time';
@@ -1080,28 +1208,28 @@ function showWelcome() {
   el.innerHTML = `
   <div class="welcome">
     <div class="welcome-logo">✦</div>
-    <h2>Selamat datang di NexusAI</h2>
-    <p>AI Chatbot dengan streaming real-time, multi-model, dan berbagai fitur lengkap.</p>
+    <h2>Selamat Datang di Dapur ResepKu 🍳</h2>
+    <p>Asisten koki virtual yang siap bantu kamu meracik bumbu, mencari resep rahasia, dan menciptakan suasana dapur yang menenangkan.</p>
     <div class="feature-grid">
-      <div class="feat-card" onclick="quickSend('Jelaskan perbedaan Python dan JavaScript untuk pemula')">
-        <div class="feat-icon">💻</div>
-        <div class="feat-title">Tanya Coding</div>
-        <div class="feat-desc">Python vs JavaScript?</div>
+      <div class="feat-card" onclick="quickSend('Berikan ide menu rumahan simpel untuk makan malam yang bisa dibuat dalam 15 menit')">
+        <div class="feat-icon">🥘</div>
+        <div class="feat-title">Makan Malam Praktis</div>
+        <div class="feat-desc">Ide menu rumahan simpel 15 menit.</div>
       </div>
-      <div class="feat-card" onclick="quickSend('Buatkan rencana belajar machine learning dari nol selama 3 bulan')">
-        <div class="feat-icon">📚</div>
-        <div class="feat-title">Buat Rencana</div>
-        <div class="feat-desc">Belajar ML dari nol</div>
+      <div class="feat-card" onclick="quickSend('Berikan resep sarapan bacon dan telur yang estetik ala film Studio Ghibli')">
+        <div class="feat-icon">🥓</div>
+        <div class="feat-title">Dapur Imajinasi</div>
+        <div class="feat-desc">Resep sarapan bacon dan telur estetik ala film Studio Ghibli.</div>
       </div>
-      <div class="feat-card" onclick="quickSend('Tulis email profesional untuk melamar kerja sebagai frontend developer')">
-        <div class="feat-icon">✍️</div>
-        <div class="feat-title">Tulis Teks</div>
-        <div class="feat-desc">Email lamaran kerja</div>
+      <div class="feat-card" onclick="quickSend('Apa rahasia membuat adonan roti manis yang super empuk ala toko roti profesional?')">
+        <div class="feat-icon">🥐</div>
+        <div class="feat-title">Inspirasi Baking</div>
+        <div class="feat-desc">Rahasia adonan roti manis yang super empuk ala toko roti profesional.</div>
       </div>
-      <div class="feat-card" onclick="quickSend('Analisa kelebihan dan kekurangan startup e-commerce di Indonesia 2026')">
-        <div class="feat-icon">📊</div>
-        <div class="feat-title">Analisa Bisnis</div>
-        <div class="feat-desc">Startup e-commerce</div>
+      <div class="feat-card" onclick="quickSend('Bagaimana cara meal-prep cerdas agar memasak jadi momen healing dan tidak membuat stres?')">
+        <div class="feat-icon">🔪</div>
+        <div class="feat-title">Tips Dapur Santai</div>
+        <div class="feat-desc">Cara meal-prep cerdas agar masak jadi momen healing, bukan stres.</div>
       </div>
     </div>
   </div>`;
@@ -1148,6 +1276,7 @@ function updateStreamBubble(el, text) {
 function finalizeStreamBubble(el, text) {
   el.innerHTML = markdownToHTML(text);
   highlightCodeBlocks(el);
+  injectPortionCalculator(el);
 }
 
 function addErrorBubble(msg) {
@@ -1197,12 +1326,25 @@ function markdownToHTML(text) {
   h = h.replace(/^## (.+)$/gm,'<h2>$1</h2>');
   h = h.replace(/^# (.+)$/gm,'<h1>$1</h1>');
   h = h.replace(/^&gt; (.+)$/gm,'<blockquote>$1</blockquote>');
-  h = h.replace(/^[-•*] (.+)$/gm,'<li>$1</li>');
+  
+  // Interactive Shopping List for list items
+  h = h.replace(/^[-•*] (.+)$/gm,'<li class="shop-item"><input type="checkbox" class="shop-check" onclick="this.parentElement.classList.toggle(\'checked\', this.checked)"> $1</li>');
   h = h.replace(/^\d+\. (.+)$/gm,'<li>$1</li>');
-  h = h.replace(/(<li>[\s\S]*?<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+  h = h.replace(/(<li[\s\S]*?<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
   h = h.replace(/\[(.+?)\]\((.+?)\)/g,'<a href="$2" target="_blank">$1</a>');
   h = h.replace(/\n\n/g,'</p><p>');
   h = h.replace(/\n/g,'<br>');
+  
+  // Smart Timer Extraction (find digits followed by menit/jam)
+  h = h.replace(/\b(\d+)\s*(menit|jam)\b/gi, (match, num, unit) => {
+    return `<button class="timer-btn" onclick="startTimer(this, ${num}, '${unit.toLowerCase()}')">⏱️ ${match}</button>`;
+  });
+  
+  // Unit Converter Extraction
+  h = h.replace(/\b(\d+(?:[,.]\d+)?)\s*(cup|sdm|sdt|oz)\b/gi, (match, num, unit) => {
+    return `<span class="unit-converter" onclick="convertUnit(this, '${num}', '${unit.toLowerCase()}')" title="Klik untuk konversi">${match}</span>`;
+  });
+  
   return `<p>${h}</p>`;
 }
 
@@ -1336,23 +1478,49 @@ async function regenerateLast() {
 // ════════════════════════════════════════════════
 //  EXPORT
 // ════════════════════════════════════════════════
-function exportChat() {
+function downloadRecipePDF() {
   const sess = getCurrentSession();
-  if (!sess || sess.history.length === 0) { showToast('⚠ Chat masih kosong', 'error'); return; }
-  const data = {
-    title: sess.title,
-    model: cfg.model,
-    exportedAt: new Date().toISOString(),
-    history: sess.history
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url;
-  a.download = `nexusai-${sess.title.replace(/\s+/g,'-').slice(0,30)}-${Date.now()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast('✓ Chat berhasil diekspor!', 'success');
+  if (!sess || sess.history.length === 0) { showToast('⚠ Belum ada chat', 'error'); return; }
+
+  let lastAI = null;
+  for (let i = sess.history.length - 1; i >= 0; i--) {
+    if (sess.history[i].role === 'assistant') {
+      lastAI = sess.history[i].content;
+      break;
+    }
+  }
+
+  if (!lastAI) {
+    showToast('⚠ Belum ada resep dari koki!', 'error');
+    return;
+  }
+
+  const printDiv = document.createElement('div');
+  printDiv.style.padding = '20px';
+  printDiv.style.fontFamily = 'Outfit, sans-serif';
+  printDiv.style.color = '#1a1a2e';
+  printDiv.innerHTML = `
+    <h1 style="color: #ea580c; text-align: center; border-bottom: 2px solid #ea580c; padding-bottom: 10px; margin-bottom: 20px;">Dapur ResepKu 👨‍🍳</h1>
+    ${markdownToHTML(lastAI)}
+  `;
+
+  const safeTitle = sess.title.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 30) || 'Menu_Baru';
+  const filename = `ResepKu_${safeTitle}.pdf`;
+
+  showToast('⏳ Menyiapkan PDF...', 'success');
+
+  html2pdf().set({
+    margin: 15,
+    filename: filename,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(printDiv).save().then(() => {
+    showToast('✓ Resep berhasil diunduh!', 'success');
+  }).catch(err => {
+    showToast('⚠ Gagal membuat PDF', 'error');
+    console.error(err);
+  });
 }
 
 // ════════════════════════════════════════════════
@@ -1429,11 +1597,11 @@ function setOnline() {
 //  SYSTEM PROMPT
 // ════════════════════════════════════════════════
 const PRESETS = {
-  default:  `Kamu adalah asisten AI yang cerdas, ramah, dan helpful.\nJawab dalam bahasa yang sama dengan pengguna.\nGunakan markdown untuk code, list, dan teks penting.`,
-  coder:    `Kamu adalah expert software engineer dengan pengalaman 10+ tahun.\nSelalu berikan kode yang lengkap, bersih, dan production-ready.\nSertakan penjelasan step-by-step dan best practice.\nGunakan code blocks untuk semua kode.`,
-  tutor:    `Kamu adalah tutor bahasa yang sabar dan kreatif.\nJelaskan konsep dengan contoh yang mudah dipahami.\nBerikan latihan dan koreksi yang membangun.\nSesuaikan gaya belajar dengan kebutuhan siswa.`,
-  writer:   `Kamu adalah penulis kreatif berbakat dengan gaya yang fleksibel.\nBuat konten yang menarik, orisinal, dan sesuai audiens.\nGunakan bahasa yang vivid, emosional, dan berkesan.\nAjukan pertanyaan klarifikasi jika diperlukan.`,
-  analyst:  `Kamu adalah analis data dan bisnis yang berpengalaman.\nBerikan analisis yang mendalam, berbasis data, dan actionable.\nGunakan framework seperti SWOT, PESTEL, atau OKR bila relevan.\nSajikan insight dalam format yang terstruktur dan mudah dipahami.`
+  default:  `Kamu adalah asisten AI yang cerdas, ramah, dan helpful.\nJawab dalam bahasa yang sama dengan pengguna.\nGunakan markdown untuk format resep, list bahan, dan instruksi masak.`,
+  chef:     `Kamu adalah Master Chef bintang Michelin dengan pengalaman puluhan tahun.\nSelalu berikan panduan teknik memasak tingkat tinggi, rahasia bumbu premium, dan cara plating yang elegan.\nGunakan bahasa yang profesional namun menginspirasi.`,
+  baker:    `Kamu adalah Pastry Chef yang ahli dalam roti, kue, dan dessert manis.\nJelaskan rasio bahan dengan presisi (suhu, waktu proofing).\nBerikan tips anti-gagal agar hasil panggangan sempurna dan mengembang.`,
+  nutritionist: `Kamu adalah Ahli Gizi yang fokus pada kesehatan dan diet seimbang.\nSajikan resep rendah kalori, tinggi protein, atau diet khusus (keto, vegan, dsb).\nSertakan estimasi kalori dan nutrisi di setiap resep yang direkomendasikan.`,
+  mom:      `Kamu adalah koki rumahan yang penuh kasih sayang (seperti sosok ibu).\nBerikan resep masakan sehari-hari yang praktis, hemat, dan disukai keluarga.\nGunakan gaya bahasa yang hangat, membumi, dan tidak kaku.`
 };
 
 function setPreset(key) {
@@ -1460,8 +1628,8 @@ function clearCurrentChat() {
   if (!sess) return;
   if (!confirm('Hapus semua pesan di chat ini?')) return;
   sess.history = [];
-  sess.title   = 'Chat Baru';
-  document.getElementById('chat-title').textContent = 'Chat Baru';
+  sess.title   = 'Racik Menu Baru';
+  document.getElementById('chat-title').textContent = 'Racik Menu Baru';
   renderMessages([]);
   renderSessions();
   saveToStorage();
@@ -1497,7 +1665,7 @@ function updateSendBtn(streaming) {
     btn.onclick   = stopStream;
   } else {
     btn.classList.remove('stop-btn');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>';
+    btn.innerHTML = '<span style="font-size:18px">🍲</span>';
     btn.onclick   = sendMessage;
     checkApiKey();
   }
@@ -1527,6 +1695,20 @@ function toggleTheme() {
 function applyTheme() {
   const t = localStorage.getItem('nexusai_theme');
   if (t) document.documentElement.setAttribute('data-theme', t);
+  if (localStorage.getItem('nexusai_ghibli') === 'true') {
+    document.body.classList.add('ghibli-theme');
+  }
+}
+
+function toggleGhibli() {
+  document.body.classList.toggle('ghibli-theme');
+  const isActive = document.body.classList.contains('ghibli-theme');
+  localStorage.setItem('nexusai_ghibli', isActive);
+  if (isActive) {
+    showToast('🍃 Mode Dapur Animasi diaktifkan!', 'success');
+  } else {
+    showToast('🍃 Mode Dapur Animasi dimatikan.', 'success');
+  }
 }
 
 function toggleSidebar() {
@@ -1548,6 +1730,132 @@ function timeAgo(ts) {
   if (s < 86400) return Math.floor(s/3600) + ' jam lalu';
   return Math.floor(s/86400) + ' hari lalu';
 }
+
+// ════════════════════════════════════════════════
+//  PORTION CALCULATOR
+// ════════════════════════════════════════════════
+function injectPortionCalculator(bubble) {
+  if (bubble.querySelector('.portion-calc')) return;
+  
+  const text = bubble.textContent.toLowerCase();
+  if (!text.includes('bahan')) return;
+  
+  const uls = bubble.querySelectorAll('ul');
+  if (uls.length === 0) return;
+  
+  const firstUl = uls[0];
+  
+  const calcWrap = document.createElement('div');
+  calcWrap.className = 'portion-calc';
+  calcWrap.innerHTML = `
+    <button class="portion-btn minus" onclick="updatePortion(this, -1)">-</button>
+    <span class="portion-text" data-portion="1">Porsi: 1</span>
+    <button class="portion-btn plus" onclick="updatePortion(this, 1)">+</button>
+  `;
+  
+  firstUl.parentNode.insertBefore(calcWrap, firstUl);
+  
+  uls.forEach(ul => {
+    ul.querySelectorAll('li').forEach(li => {
+      li.setAttribute('data-base-html', li.innerHTML);
+    });
+  });
+}
+
+window.updatePortion = function(btn, delta) {
+  const calcWrap = btn.closest('.portion-calc');
+  const textEl = calcWrap.querySelector('.portion-text');
+  let current = parseInt(textEl.getAttribute('data-portion'));
+  let next = current + delta;
+  if (next < 1) next = 1;
+  
+  textEl.setAttribute('data-portion', next);
+  textEl.textContent = 'Porsi: ' + next;
+  
+  const bubble = calcWrap.closest('.bubble');
+  const uls = bubble.querySelectorAll('ul');
+  
+  uls.forEach(ul => {
+    ul.querySelectorAll('li').forEach(li => {
+      let baseHtml = li.getAttribute('data-base-html');
+      if (!baseHtml) return;
+      
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = baseHtml;
+      
+      const walk = (node) => {
+        if (node.nodeType === 3) {
+          node.nodeValue = node.nodeValue.replace(/\b(\d+(?:\.\d+)?)\b/g, (numStr) => {
+            let num = parseFloat(numStr);
+            let val = num * next;
+            return Number.isInteger(val) ? val : val.toFixed(1);
+          });
+        } else {
+          node.childNodes.forEach(walk);
+        }
+      };
+      
+      walk(tempDiv);
+      li.innerHTML = tempDiv.innerHTML;
+    });
+  });
+};
+// ════════════════════════════════════════════════
+//  FITUR BARU: TIMERS, CONVERTERS, VISION
+// ════════════════════════════════════════════════
+window.startTimer = function(btn, amount, unit) {
+  const ms = amount * (unit === 'jam' ? 3600000 : 60000);
+  const endTime = Date.now() + ms;
+  
+  const card = document.createElement('div');
+  card.className = 'active-timer-card';
+  card.innerHTML = `
+    <div>
+      <div style="font-size:12px;color:var(--text2)">Timer Aktif</div>
+      <div class="timer-time">--:--</div>
+    </div>
+    <button class="icon-btn" onclick="this.parentElement.remove()" style="background:var(--surface2)">✕</button>
+  `;
+  document.getElementById('floating-timers').appendChild(card);
+  
+  const timeEl = card.querySelector('.timer-time');
+  const iv = setInterval(() => {
+    const remain = endTime - Date.now();
+    if (remain <= 0) {
+      clearInterval(iv);
+      timeEl.textContent = "00:00";
+      card.classList.add('done');
+      showToast('⏰ Waktu memasak sudah habis!', 'success');
+      // Bunyikan suara
+      try {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        audio.play();
+      } catch(e) {}
+      return;
+    }
+    const m = Math.floor(remain / 60000);
+    const s = Math.floor((remain % 60000) / 1000);
+    timeEl.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+  }, 1000);
+};
+
+window.convertUnit = function(span, numStr, unit) {
+  let num = parseFloat(numStr.replace(',','.'));
+  if (isNaN(num)) return;
+  
+  let result = "";
+  if (unit === 'cup') result = (num * 240) + " ml (atau " + (num * 120) + " gram tepung)";
+  else if (unit === 'sdm') result = (num * 15) + " ml / gram";
+  else if (unit === 'sdt') result = (num * 5) + " ml / gram";
+  else if (unit === 'oz') result = (num * 28.35).toFixed(1) + " gram";
+  
+  if (result) {
+    showToast(`🔄 Konversi: ${num} ${unit} ≈ ${result}`, 'success');
+  }
+};
+
+
+
 </script>
 </body>
 </html>
